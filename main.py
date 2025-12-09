@@ -58,8 +58,10 @@ def download_video(message, url):
 
     try:
         ydl_opts = {
-            "format": format_id,
+            # Беремо або вибраний формат + аудіо, або автоматично кращий відео+аудіо
+            "format": f"{format_id}+bestaudio/best",
             "outtmpl": "video.mp4",
+            "merge_output_format": "mp4",  # об'єднує аудіо+відео
         }
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -71,13 +73,13 @@ def download_video(message, url):
 
     try:
         with open("video.mp4", "rb") as f:
+            # Відправляємо як документ, щоб не втратити звук
             bot.send_document(message.chat.id, f)
 
         os.remove("video.mp4")
 
     except Exception as e:
         bot.send_message(message.chat.id, f"❌ Не вдалося надіслати відео: {e}")
-
 
 print("🚀 Bot is running...")
 bot.infinity_polling()
